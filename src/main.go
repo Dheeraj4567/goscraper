@@ -98,6 +98,20 @@ func main() {
 		}
 		return c.Next()
 	})
+	app.Use(func(c *fiber.Ctx) error {
+                 switch c.Path() {
+                case "/login", "/hello", "/health":  // <-- Add /health here
+                       return c.Next()
+    }
+
+               token := c.Get("X-CSRF-Token")
+    if token == "" {
+        return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{
+            "error": "Missing X-CSRF-Token header",
+        })
+    }
+    return c.Next()
+})
 
 	app.Use(func(c *fiber.Ctx) error {
 		switch c.Path() {
