@@ -193,7 +193,12 @@ func main() {
 	app.Get("/hello", func(c *fiber.Ctx) error {
 		return c.JSON(fiber.Map{"message": "Hello, World!"})
 	})
-
+app.Get("/health", func(c *fiber.Ctx) error {
+	return c.JSON(fiber.Map{
+		"status": "alive",
+		"time":   time.Now().Format(time.RFC3339),
+	})
+})
 	app.Post("/login", func(c *fiber.Ctx) error {
 		var creds struct {
 			Username string `json:"account"`
