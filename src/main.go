@@ -85,9 +85,12 @@ func main() {
 
 	// Unified CSRF check for specific routes
 	app.Use(func(c *fiber.Ctx) error {
+		// Debugging log to verify the path
+		log.Printf("Request Path: %s", c.Path())
+
 		// Skip CSRF check for these paths
 		switch c.Path() {
-		case "/login", "/hello", "/health": // <-- Make sure /health is here
+		case "/login", "/hello", "/health": // <-- Ensure /health is here
 			return c.Next()
 		}
 
