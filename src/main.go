@@ -84,21 +84,24 @@ func main() {
 		LimiterMiddleware:  limiter.SlidingWindow{},
 	}))
 
-app.Use(func(c *fiber.Ctx) error {
-    // Skip CSRF check for these paths
-    switch c.Path() {
-    case "/login", "/hello", "/health":  // <-- Make sure /health is here
-        return c.Next()
-    }
+	// Unified CSRF check for specific routes
+	app.Use(func(c *fiber.Ctx) error {
+		// Skip CSRF check for these paths
+		switch c.Path() {
+		case "/login", "/hello", "/health": // <-- Make sure /health is here
+			return c.Next()
+		}
 
-    token := c.Get("X-CSRF-Token")
-    if token == "" {
-        return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{
-            "error": "Missing X-CSRF-Token header",
-        })
-    }
-    return c.Next()
-})
+		token := c.Get("X-CSRF-Token")
+		if token == "" {
+			return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{
+				"error": "Missing X-CSRF-Token header",
+			})
+		}
+		return c.Next()
+	})
+
+	// Authorization middleware
 	app.Use(func(c *fiber.Ctx) error {
 		switch c.Path() {
 		case "/hello":
@@ -189,16 +192,19 @@ app.Use(func(c *fiber.Ctx) error {
 	})
 
 	// Routes -----------------------------------------
-
 	app.Get("/hello", func(c *fiber.Ctx) error {
 		return c.JSON(fiber.Map{"message": "Hello, World!"})
 	})
-app.Get("/health", func(c *fiber.Ctx) error {
-	return c.JSON(fiber.Map{
-		"status": "alive",
-		"time":   time.Now().Format(time.RFC3339),
+
+	// Bypass CSRF validation for /health
+	app.Get("/health", func(c *fiber.Ctx) error {
+		return c.JSON(fiber.Map{
+			"status": "alive",
+			"time":   time.Now().Format(time.RFC3339),
+		})
 	})
-})
+
+	// Login route
 	app.Post("/login", func(c *fiber.Ctx) error {
 		var creds struct {
 			Username string `json:"account"`
