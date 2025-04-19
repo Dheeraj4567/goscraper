@@ -12,7 +12,6 @@ import (
 	"goscraper/src/utils"
 	"log"
 	"os"
-
 	"time"
 
 	"github.com/gofiber/fiber/v2"
