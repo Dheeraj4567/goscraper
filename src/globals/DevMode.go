@@ -1,5 +1,5 @@
 package globals
 
 var (
-    DevMode bool = true
+	DevMode bool = true
 )

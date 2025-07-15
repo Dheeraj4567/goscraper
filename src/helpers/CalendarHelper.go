@@ -10,15 +10,15 @@ import (
 
 	"github.com/PuerkitoBio/goquery"
 	"github.com/valyala/fasthttp"
-    // "github.com/joho/godotenv"
-    // "os"
+	// "github.com/joho/godotenv"
+	// "os"
 )
 
 func init() {
-    // Load .env file from the project root
-    // if err := godotenv.Load(); err != nil {
-    //     fmt.Printf("Warning: .env file not found: %v\n", err)
-    // }
+	// Load .env file from the project root
+	// if err := godotenv.Load(); err != nil {
+	//     fmt.Printf("Warning: .env file not found: %v\n", err)
+	// }
 }
 
 type CalendarFetcher struct {
