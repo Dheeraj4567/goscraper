@@ -11,8 +11,8 @@ import (
 	"goscraper/src/types"
 	"goscraper/src/utils"
 	"log"
-	"os"
 	"net"
+	"os"
 
 	"time"
 
@@ -83,7 +83,7 @@ func main() {
 
 	app.Use(func(c *fiber.Ctx) error {
 		switch c.Path() {
-		case "/login", "/hello":
+		case "/login", "/hello", "/health":
 			return c.Next()
 		}
 
@@ -98,7 +98,7 @@ func main() {
 
 	app.Use(func(c *fiber.Ctx) error {
 		switch c.Path() {
-		case "/hello":
+		case "/hello", "/health":
 			return c.Next()
 		}
 
@@ -173,7 +173,7 @@ func main() {
 
 	api := app.Group("/", func(c *fiber.Ctx) error {
 		switch c.Path() {
-		case "/login", "/hello":
+		case "/login", "/hello", "/health":
 			return c.Next()
 		}
 		token := c.Get("X-CSRF-Token")
@@ -189,6 +189,15 @@ func main() {
 
 	app.Get("/hello", func(c *fiber.Ctx) error {
 		return c.JSON(fiber.Map{"message": "Hello, World!"})
+	})
+
+	app.Get("/health", func(c *fiber.Ctx) error {
+		return c.JSON(fiber.Map{
+			"status":    "UP",
+			"service":   "GoScraper",
+			"version":   "v3.0",
+			"timestamp": time.Now().UTC().Format(time.RFC3339),
+		})
 	})
 
 	app.Post("/login", func(c *fiber.Ctx) error {
@@ -375,7 +384,7 @@ func main() {
 		port = "8080"
 	}
 	log.Printf("Starting server on port %s...", port)
-	ln, err := net.Listen("tcp", "[::]:" + port)
+	ln, err := net.Listen("tcp", "[::]:"+port)
 	if err != nil {
 		log.Fatalf("Failed to bind: %v", err)
 	}

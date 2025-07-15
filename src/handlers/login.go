@@ -32,7 +32,7 @@ type LoginResponse struct {
 	Lookup        any                    `json:"lookup"`
 	Cookies       string                 `json:"cookies"`
 	Status        int                    `json:"status"`
-	Message       any                 `json:"message"`
+	Message       any                    `json:"message"`
 	Errors        []string               `json:"errors"`
 }
 
@@ -44,16 +44,16 @@ func (lf *LoginFetcher) Logout(token string) (map[string]interface{}, error) {
 	defer fasthttp.ReleaseResponse(resp)
 
 	req.SetRequestURI("https://academia.srmist.edu.in/accounts/p/10002227248/logout?servicename=ZohoCreator&serviceurl=https://academia.srmist.edu.in")
-    req.Header.SetMethod("GET")
-    req.Header.Set("Accept-Language", "en-US,en;q=0.9")
-    req.Header.Set("Connection", "keep-alive")
-    req.Header.Set("DNT", "1")
-    req.Header.Set("Referer", "https://academia.srmist.edu.in/")
-    req.Header.Set("Sec-Fetch-Dest", "document")
-    req.Header.Set("Sec-Fetch-Mode", "navigate")
-    req.Header.Set("Sec-Fetch-Site", "same-origin")
-    req.Header.Set("Upgrade-Insecure-Requests", "1")
-    req.Header.Set("Cookie", token)
+	req.Header.SetMethod("GET")
+	req.Header.Set("Accept-Language", "en-US,en;q=0.9")
+	req.Header.Set("Connection", "keep-alive")
+	req.Header.Set("DNT", "1")
+	req.Header.Set("Referer", "https://academia.srmist.edu.in/")
+	req.Header.Set("Sec-Fetch-Dest", "document")
+	req.Header.Set("Sec-Fetch-Mode", "navigate")
+	req.Header.Set("Sec-Fetch-Site", "same-origin")
+	req.Header.Set("Upgrade-Insecure-Requests", "1")
+	req.Header.Set("Cookie", token)
 
 	if err := fasthttp.Do(req, resp); err != nil {
 		return nil, err

@@ -22,7 +22,7 @@ type TableSlot struct {
 }
 
 type DaySchedule struct {
-	Day   int         `json:"day"`
+	Day   int           `json:"day"`
 	Table []interface{} `json:"table"`
 }
 
