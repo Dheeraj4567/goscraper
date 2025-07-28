@@ -104,7 +104,7 @@ func (a *AcademicsFetch) ScrapeAttendance(html string) (*types.AttendanceRespons
 	})
 
 	if rows.Length() == 0 {
-		fmt.Println("No attendance data found")
+		// fmt.Println("No attendance data found")
 		return &types.AttendanceResponse{RegNumber: regNumber, Attendance: []types.Attendance{}}, nil
 	}
 
@@ -113,8 +113,8 @@ func (a *AcademicsFetch) ScrapeAttendance(html string) (*types.AttendanceRespons
 
 		courseCode := s.Text()
 		if matched, _ := regexp.MatchString(`^\d.*`, courseCode); len(courseCode) > 10 && matched || strings.Contains(strings.ToLower(courseCode), "regular") {
-			conducted := s.NextAll().Eq(4).Text()
-			absent := s.NextAll().Eq(5).Text()
+			conducted := s.NextAll().Eq(5).Text()
+			absent := s.NextAll().Eq(6).Text()
 
 			conductedNum := utils.ParseFloat(conducted)
 			absentNum := utils.ParseFloat(absent)

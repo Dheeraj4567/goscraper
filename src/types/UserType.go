@@ -10,4 +10,5 @@ type User struct {
 	Year       int    `json:"year"`
 	Department string `json:"department"`
 	Section    string `json:"section"`
+	Specialization string `json:"specialization"`
 }

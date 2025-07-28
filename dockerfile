@@ -1,40 +1,47 @@
+# syntax=docker/dockerfile:1
+
 ARG GO_VERSION=1.23
-FROM --platform=$BUILDPLATFORM golang:${GO_VERSION} AS build
-WORKDIR /src
 
-RUN --mount=type=cache,target=/go/pkg/mod/ \
-    --mount=type=bind,source=go.sum,target=go.sum \
-    --mount=type=bind,source=go.mod,target=go.mod \
-    go mod download -x
+# Build stage
+FROM golang:${GO_VERSION}-alpine AS builder
 
-ARG TARGETARCH
+WORKDIR /app
 
-RUN --mount=type=cache,target=/go/pkg/mod/ \
-    --mount=type=bind,target=. \
-    CGO_ENABLED=0 GOARCH=$TARGETARCH go build -o /bin/server ./src
+# Copy go.mod and go.sum
+COPY go.mod go.sum ./
 
-FROM alpine:latest AS final
+# Download dependencies
+RUN go mod download
 
-RUN --mount=type=cache,target=/var/cache/apk \
-    apk --update add \
-        ca-certificates \
-        tzdata \
-        && \
-        update-ca-certificates
+# Copy source code
+COPY src/ ./src/
 
-ARG UID=10001
-RUN adduser \
-    --disabled-password \
-    --gecos "" \
-    --home "/nonexistent" \
-    --shell "/sbin/nologin" \
-    --no-create-home \
-    --uid "${UID}" \
-    appuser
-USER appuser
+# Copy environment file if it exists
+COPY .env* ./
 
-COPY --from=build /bin/server /bin/
+# Build the application
+RUN CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -o main src/main.go
+
+# Final stage
+FROM alpine:latest
+
+# Install ca-certificates for HTTPS requests
+RUN apk --no-cache add ca-certificates
+
+WORKDIR /app
+
+# Copy the binary from builder stage
+COPY --from=builder /app/main .
+COPY --from=builder /app/.env* ./
+
+# Create a non-root user
+RUN addgroup -g 1001 -S golang && \
+    adduser -S golang -u 1001
+
+USER golang
 
 EXPOSE 8080
 
-ENTRYPOINT [ "/bin/server" ]
+ENV PORT=8080
+
+CMD ["./main"]
