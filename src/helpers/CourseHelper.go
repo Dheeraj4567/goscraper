@@ -23,22 +23,8 @@ func NewCoursePage(cookie string) *CoursePage {
 	}
 }
 
-func (c *CoursePage) getUrl(currentDate time.Time) string {
-	currentMonth := currentDate.Month()
-	currentYear := currentDate.Year()
-
-	var academicYearStart, academicYearEnd int
-
-	if currentMonth >= 8 && currentMonth <= 12 {
-		academicYearStart = currentYear - 1
-		academicYearEnd = currentYear
-	} else {
-		academicYearStart = currentYear - 2
-		academicYearEnd = currentYear - 1
-	}
-
-	url := fmt.Sprintf("https://academia.srmist.edu.in/srm_university/academia-academic-services/page/My_Time_Table_%d_%d", academicYearStart, academicYearEnd%100)
-	return url
+func (c *CoursePage) getUrl() string {
+	return "https://academia.srmist.edu.in/srm_university/academia-academic-services/page/My_Time_Table_2023_24"
 }
 
 func (c *CoursePage) GetPage() (string, error) {
@@ -48,19 +34,25 @@ func (c *CoursePage) GetPage() (string, error) {
 	resp := fasthttp.AcquireResponse()
 	defer fasthttp.ReleaseResponse(resp)
 
-	req.SetRequestURI(c.getUrl(time.Now()))
+	url := c.getUrl()
+	req.SetRequestURI(url)
 	req.Header.SetMethod("GET")
-	req.Header.Set("accept", "*/*")
-	req.Header.Set("accept-language", "en-US,en;q=0.9")
-	req.Header.Set("content-type", "application/x-www-form-urlencoded; charset=UTF-8")
-	req.Header.Set("sec-fetch-dest", "empty")
-	req.Header.Set("sec-fetch-mode", "cors")
-	req.Header.Set("sec-fetch-site", "same-origin")
-	req.Header.Set("x-requested-with", "XMLHttpRequest")
-	req.Header.Set("cookie", utils.ExtractCookies(c.cookie))
+	req.Header.Set("Accept", "*/*")
+	req.Header.Set("Accept-Language", "en-US,en;q=0.9")
+	req.Header.Set("Connection", "keep-alive")
+	req.Header.Set("Content-Type", "application/x-www-form-urlencoded; charset=UTF-8")
+	req.Header.Set("cookie", c.cookie)
 	req.Header.Set("Referer", "https://academia.srmist.edu.in/")
-	req.Header.Set("Referrer-Policy", "strict-origin-when-cross-origin")
-	req.Header.Set("Cache-Control", "private, max-age=120, must-revalidate")
+	req.Header.Set("Sec-Fetch-Dest", "empty")
+	req.Header.Set("Sec-Fetch-Mode", "cors")
+	req.Header.Set("Sec-Fetch-Site", "same-origin")
+	req.Header.Set("User-Agent", "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36")
+	req.Header.Set("X-Requested-With", "XMLHttpRequest")
+	req.Header.Set("dnt", "1")
+	req.Header.Set("sec-ch-ua", `"Not)A;Brand";v="8", "Chromium";v="138", "Google Chrome";v="138"`)
+	req.Header.Set("sec-ch-ua-mobile", "?0")
+	req.Header.Set("sec-ch-ua-platform", `"macOS"`)
+	req.Header.Set("sec-gpc", "1")
 
 	if err := fasthttp.Do(req, resp); err != nil {
 		return "", fmt.Errorf("failed to fetch page: %v", err)

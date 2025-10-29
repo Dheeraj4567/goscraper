@@ -24,6 +24,7 @@ func NewAcademicsFetch(cookie string) *AcademicsFetch {
 
 func (a *AcademicsFetch) getHTML() (string, error) {
 
+
 	req := fasthttp.AcquireRequest()
 	defer fasthttp.ReleaseRequest(req)
 
@@ -32,10 +33,22 @@ func (a *AcademicsFetch) getHTML() (string, error) {
 
 	req.SetRequestURI("https://academia.srmist.edu.in/srm_university/academia-academic-services/page/My_Attendance")
 	req.Header.SetMethod("GET")
-	req.Header.Set("accept-language", "en-GB,en-US;q=0.9,en;q=0.8")
-	req.Header.Set("content-type", "application/x-www-form-urlencoded; charset=UTF-8")
+	req.Header.Set("Accept", "*/*")
+	req.Header.Set("Accept-Language", "en-US,en;q=0.9")
+	req.Header.Set("Connection", "keep-alive")
+	req.Header.Set("Content-Type", "application/x-www-form-urlencoded; charset=UTF-8")
 	req.Header.Set("Referer", "https://academia.srmist.edu.in/")
-	req.Header.Set("cookie", utils.ExtractCookies(a.cookie))
+	req.Header.Set("Sec-Fetch-Dest", "empty")
+	req.Header.Set("Sec-Fetch-Mode", "cors")
+	req.Header.Set("Sec-Fetch-Site", "same-origin")
+	req.Header.Set("User-Agent", "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36")
+	req.Header.Set("X-Requested-With", "XMLHttpRequest")
+	req.Header.Set("dnt", "1")
+	req.Header.Set("sec-ch-ua", `"Not)A;Brand";v="8", "Chromium";v="138", "Google Chrome";v="138"`)
+	req.Header.Set("sec-ch-ua-mobile", "?0")
+	req.Header.Set("sec-ch-ua-platform", `"macOS"`)
+	req.Header.Set("sec-gpc", "1")
+	req.Header.Set("cookie", a.cookie)
 
 	if err := fasthttp.Do(req, resp); err != nil {
 		return "", fmt.Errorf("failed to fetch HTML: %v", err)
